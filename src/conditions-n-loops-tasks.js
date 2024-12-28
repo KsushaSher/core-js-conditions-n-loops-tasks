@@ -501,8 +501,49 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  const { length } = str;
+  if (length === 0 || iterations === 0) return str;
+  const seen = new Map();
+  let newStr = str;
+
+  for (let i = 0; i < iterations; i += 1) {
+    let even = '';
+    let odd = '';
+
+    for (let j = 0; j < length; j += 1) {
+      if (j % 2 === 0) {
+        even += newStr[j];
+      } else {
+        odd += newStr[j];
+      }
+    }
+
+    newStr = even + odd;
+
+    if (seen.has(newStr)) {
+      const cycleLength = i - seen.get(newStr);
+      const countIterations = (iterations - i - 1) % cycleLength;
+      let result = newStr;
+      for (let k = 0; k < countIterations; k += 1) {
+        even = '';
+        odd = '';
+        for (let j = 0; j < length; j += 1) {
+          if (j % 2 === 0) {
+            even += result[j];
+          } else {
+            odd += result[j];
+          }
+        }
+        result = even + odd;
+      }
+      return result;
+    }
+
+    seen.set(newStr, i);
+  }
+
+  return newStr;
 }
 
 /**
@@ -522,8 +563,52 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const arrNum = [];
+  let temp = number;
+
+  while (temp > 0) {
+    arrNum.push(temp % 10);
+    temp = Math.floor(temp / 10);
+  }
+
+  arrNum.reverse();
+  let i;
+  for (i = arrNum.length - 2; i >= 0; i -= 1) {
+    if (arrNum[i] < arrNum[i + 1]) {
+      break;
+    }
+  }
+
+  if (i < 0) return number;
+
+  let smallestIndex = i + 1;
+  for (let j = i + 1; j < arrNum.length; j += 1) {
+    if (arrNum[j] > arrNum[i] && arrNum[j] <= arrNum[smallestIndex]) {
+      smallestIndex = j;
+    }
+  }
+
+  const tempDigit = arrNum[i];
+  arrNum[i] = arrNum[smallestIndex];
+  arrNum[smallestIndex] = tempDigit;
+
+  for (let k = i + 1; k < arrNum.length - 1; k += 1) {
+    for (let l = k + 1; l < arrNum.length; l += 1) {
+      if (arrNum[k] > arrNum[l]) {
+        const tempSwap = arrNum[k];
+        arrNum[k] = arrNum[l];
+        arrNum[l] = tempSwap;
+      }
+    }
+  }
+
+  let result = 0;
+  for (let k = 0; k < arrNum.length; k += 1) {
+    result = result * 10 + arrNum[k];
+  }
+
+  return result;
 }
 
 module.exports = {
